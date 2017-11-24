@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title></title>
+  <style>
+    textarea {
+      width: 800px;
+      height: 900px;
+      float: left;
+    }
+
+    .trans {
+      float: left;
+      margin-left: 50px;
+      margin-right: 50px;
+    }
+
+    .trans div {
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+      font-size: 30px;
+      border: 1px solid #000;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    #tran1 {
+      margin-top: 200px;
+    }
+
+    #tran2 {
+      margin-top: 200px;
+    }
+  </style>
+
+  <script>
+
+    window.onload = function () {
+
+      var tran1 = document.getElementById('tran1');
+      tran1.addEventListener('click', function () {
+        translate({ ordered: true });
+      }, false)
+
+      var tran2 = document.getElementById('tran2');
+      tran2.addEventListener('click', function () {
+        translate({ ordered: false });
+      })
+
+    }
+
+    function translate(options) {
+
+      var t1 = document.getElementById('t1');
+      var t2 = document.getElementById('t2');
+
+      // 清空右侧框
+      t2.value = '';
+
+      var text = t1.value;
+      var arr = text.split('\n');
+
+      var titleCounter = [];  // 该变量记录已经出现的标题个数 [0]是所有标题的个数，[1]是一级标题个数，[2]是二级，以此类推
+
+      var head = '';  // 大标题
+      var toc = [];     // 目录
+      var contents = [];  // 正文
+
+      for (var i = 0; i < arr.length; i++) {
+
+        // trim
+        var line = arr[i].replace(/(^\s*)|(\s*$)/g, "");
+
+        // 判断是否为标题行
+        var sharpMatchResult = line.match(/^#+/);
+
+        // 该行是标题
+        if (sharpMatchResult) {
+
+          // 是几级标题
+          var level = sharpMatchResult[0].length;
+
+          // 记录标题个数
+          titleCounter[0] = (titleCounter[0] || 0) + 1;
+          titleCounter[level] = (titleCounter[level] || 0) + 1;
+          titleCounter.length = level + 1;
+
+          // 如果是第一个标题，我们认为是整篇文章的大标题
+          if (titleCounter[0] == 1) {
+
+            head = line;
+
+          } else { // 该行是标题，但并非大标题
+
+            // 标题的名字
+            var titleName = line.replace(/^#+\s*[\.\d]*\s*/, '');
+
+            // 章节号
+            var chapterNO = '';
+            for (var j = 2; j <= level; j++) {
+              if (j >= 3) chapterNO += '.';
+              chapterNO += titleCounter[j];
+            }
+
+            // 追加到contents变量中
+            contents.push({
+              type: 'title',
+              level: level,
+              sharps: sharpMatchResult[0],
+              chapterNO: chapterNO,
+              titleName: titleName
+            });
+
+            // 追加目录
+            toc.push({
+              level: level,
+              chapterNO: chapterNO,
+              titleName: titleName
+            })
+          }
+
+        } else { // 该行不是标题
+
+          if (titleCounter[0] == 1) continue;
+
+          // 追加到contents变量中
+          contents.push({
+            type: 'paragraph',
+            content: arr[i]
+          });
+        }
+      }
+
+      // 输出
+      var output = '';
+
+      // 添加大标题
+      output += head;
+      output += '\n';
+
+      // 添加目录
+      for (var i = 0; i < toc.length; i++) {
+
+        var item = toc[i];
+
+        var tmp = '';
+
+        // 根据标题的级别缩进
+        var blankCount = (item.level - 2) * 2;
+        for (var j = 0; j < blankCount; j++) tmp += '　';
+
+        tmp += '[';
+        if (options.ordered) {
+          tmp += item.chapterNO;
+          tmp += '  ';
+        }
+        tmp += item.titleName;
+        tmp += '](#user-content-';
+        if (options.ordered) {
+          tmp += item.chapterNO.replace(/\./g, '');
+          tmp += '--';
+        }
+        tmp += item.titleName;
+        tmp += ')';
+
+        output += tmp;
+        output += '\n\n';
+      }
+
+      // 添加一个空行
+      output += '\t\n\n';
+
+      // 添加内容
+      for (var i = 0; i < contents.length; i++) {
+
+        var item = contents[i];
+
+        if (item.type == 'title') {
+
+          var tmp = '';
+          tmp += item.sharps;
+          tmp += '  ';
+          if (options.ordered) {
+            tmp += item.chapterNO;
+            tmp += '  ';
+          }
+          tmp += item.titleName;
+
+          output += tmp;
+          output += '\n';
+
+        } else {
+
+          output += item.content;
+          output += '\n';
+
+        }
+      }
+
+      // 在右面的框框中写输出内容
+      t2.value = output;
+    } 
+
+  </script>
+</head>
+<body>
+  <textarea id="t1"></textarea>
+  <div class="trans">
+    <div id="tran1">Go</div>
+    <div id="tran2">Un</div>
+  </div>
+  <textarea id="t2"></textarea>
+</body>
+</html>
