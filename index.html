@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -49,40 +49,40 @@
     function translate(options) {
       var t1 = document.getElementById('t1');
       var t2 = document.getElementById('t2');
-      // Çå¿ÕÓÒ²à¿ò
+      // æ¸…ç©ºå³ä¾§æ¡†
       t2.value = '';
       var text = t1.value;
       var arr = text.split('\n');
-      var titleCounter = [];  // ¸Ã±äÁ¿¼ÇÂ¼ÒÑ¾­³öÏÖµÄ±êÌâ¸öÊı [0]ÊÇËùÓĞ±êÌâµÄ¸öÊı£¬[1]ÊÇÒ»¼¶±êÌâ¸öÊı£¬[2]ÊÇ¶ş¼¶£¬ÒÔ´ËÀàÍÆ
-      var head = '';  // ´ó±êÌâ
-      var toc = [];     // Ä¿Â¼
-      var contents = [];  // ÕıÎÄ
+      var titleCounter = [];  // è¯¥å˜é‡è®°å½•å·²ç»å‡ºç°çš„æ ‡é¢˜ä¸ªæ•° [0]æ˜¯æ‰€æœ‰æ ‡é¢˜çš„ä¸ªæ•°ï¼Œ[1]æ˜¯ä¸€çº§æ ‡é¢˜ä¸ªæ•°ï¼Œ[2]æ˜¯äºŒçº§ï¼Œä»¥æ­¤ç±»æ¨
+      var head = '';  // å¤§æ ‡é¢˜
+      var toc = [];     // ç›®å½•
+      var contents = [];  // æ­£æ–‡
       for (var i = 0; i < arr.length; i++) {
         // trim
         var line = arr[i].replace(/(^\s*)|(\s*$)/g, "");
-        // ÅĞ¶ÏÊÇ·ñÎª±êÌâĞĞ
+        // åˆ¤æ–­æ˜¯å¦ä¸ºæ ‡é¢˜è¡Œ
         var sharpMatchResult = line.match(/^#+/);
-        // ¸ÃĞĞÊÇ±êÌâ
+        // è¯¥è¡Œæ˜¯æ ‡é¢˜
         if (sharpMatchResult) {
-          // ÊÇ¼¸¼¶±êÌâ
+          // æ˜¯å‡ çº§æ ‡é¢˜
           var level = sharpMatchResult[0].length;
-          // ¼ÇÂ¼±êÌâ¸öÊı
+          // è®°å½•æ ‡é¢˜ä¸ªæ•°
           titleCounter[0] = (titleCounter[0] || 0) + 1;
           titleCounter[level] = (titleCounter[level] || 0) + 1;
           titleCounter.length = level + 1;
-          // Èç¹ûÊÇµÚÒ»¸ö±êÌâ£¬ÎÒÃÇÈÏÎªÊÇÕûÆªÎÄÕÂµÄ´ó±êÌâ
+          // å¦‚æœæ˜¯ç¬¬ä¸€ä¸ªæ ‡é¢˜ï¼Œæˆ‘ä»¬è®¤ä¸ºæ˜¯æ•´ç¯‡æ–‡ç« çš„å¤§æ ‡é¢˜
           if (titleCounter[0] == 1) {
             head = line;
-          } else { // ¸ÃĞĞÊÇ±êÌâ£¬µ«²¢·Ç´ó±êÌâ
-            // ±êÌâµÄÃû×Ö
+          } else { // è¯¥è¡Œæ˜¯æ ‡é¢˜ï¼Œä½†å¹¶éå¤§æ ‡é¢˜
+            // æ ‡é¢˜çš„åå­—
             var titleName = line.replace(/^#+\s*[\.\d]*\s*/, '');
-            // ÕÂ½ÚºÅ
+            // ç« èŠ‚å·
             var chapterNO = '';
             for (var j = 2; j <= level; j++) {
               if (j >= 3) chapterNO += '.';
               chapterNO += titleCounter[j];
             }
-            // ×·¼Óµ½contents±äÁ¿ÖĞ
+            // è¿½åŠ åˆ°contentså˜é‡ä¸­
             contents.push({
               type: 'title',
               level: level,
@@ -90,34 +90,34 @@
               chapterNO: chapterNO,
               titleName: titleName
             });
-            // ×·¼ÓÄ¿Â¼
+            // è¿½åŠ ç›®å½•
             toc.push({
               level: level,
               chapterNO: chapterNO,
               titleName: titleName
             })
           }
-        } else { // ¸ÃĞĞ²»ÊÇ±êÌâ
+        } else { // è¯¥è¡Œä¸æ˜¯æ ‡é¢˜
           if (titleCounter[0] == 1) continue;
-          // ×·¼Óµ½contents±äÁ¿ÖĞ
+          // è¿½åŠ åˆ°contentså˜é‡ä¸­
           contents.push({
             type: 'paragraph',
             content: arr[i]
           });
         }
       }
-      // Êä³ö
+      // è¾“å‡º
       var output = '';
-      // Ìí¼Ó´ó±êÌâ
+      // æ·»åŠ å¤§æ ‡é¢˜
       output += head;
       output += '\n';
-      // Ìí¼ÓÄ¿Â¼
+      // æ·»åŠ ç›®å½•
       for (var i = 0; i < toc.length; i++) {
         var item = toc[i];
         var tmp = '';
-        // ¸ù¾İ±êÌâµÄ¼¶±ğËõ½ø
+        // æ ¹æ®æ ‡é¢˜çš„çº§åˆ«ç¼©è¿›
         var blankCount = (item.level - 2) * 2;
-        for (var j = 0; j < blankCount; j++) tmp += '¡¡';
+        for (var j = 0; j < blankCount; j++) tmp += 'ã€€';
         tmp += '[';
         if (options.ordered) {
           tmp += item.chapterNO;
@@ -134,9 +134,9 @@
         output += tmp;
         output += '\n\n';
       }
-      // Ìí¼ÓÒ»¸ö¿ÕĞĞ
+      // æ·»åŠ ä¸€ä¸ªç©ºè¡Œ
       output += '\t\n\n';
-      // Ìí¼ÓÄÚÈİ
+      // æ·»åŠ å†…å®¹
       for (var i = 0; i < contents.length; i++) {
         var item = contents[i];
         if (item.type == 'title') {
@@ -155,7 +155,7 @@
           output += '\n';
         }
       }
-      // ÔÚÓÒÃæµÄ¿ò¿òÖĞĞ´Êä³öÄÚÈİ
+      // åœ¨å³é¢çš„æ¡†æ¡†ä¸­å†™è¾“å‡ºå†…å®¹
       t2.value = output;
     }
   </script>
